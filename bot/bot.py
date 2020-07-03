@@ -1,6 +1,5 @@
 import os
 import discord
-import configparser
 from pymongo import MongoClient
 from bot.commands import Command
 
@@ -49,7 +48,7 @@ async def on_message(message):
         if isNewUser:
             await message.channel.send('User Created!')
         else:
-            await message.channel.send('User already registered.')
+            await message.channel.send('User already registered. Use --change name if needed.')
 
     elif 'match' in command:
 
@@ -90,6 +89,10 @@ async def on_message(message):
                                    db_UserQueue, db_MatchQueue, db_MatchStats)
         await message.channel.send(msg)
 
+    elif 'help' in command:
+
+        msg = "Commands must start with -- and be in the #melee channel to be recognized. Usable commands: register me, match %NAME # - %NAME #, confirm, my stats, change name, stats vs %NAME, status. "
+        await message.channel.send(msg)
 
 # Set up the base bot
 
