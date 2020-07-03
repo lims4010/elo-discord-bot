@@ -60,26 +60,34 @@ async def on_message(message):
 
     elif 'confirm' in command:
 
-        command = command.replace('confirm', '')
-        msg = Command.confirm_match(message, command, db_UserData,
+        msg = Command.confirm_match(message, db_UserData,
                                     db_UserQueue, db_MatchQueue, db_MatchStats)
         await message.channel.send(msg)
 
     elif 'my stats' in command:
+
         command = command.replace('my stats', '')
         msg = Command.get_mystats(message, db_UserData)
         await message.channel.send(msg)
 
     elif 'change name' in command:
+
         msg = Command.change_name(message, db_UserData)
         await message.channel.send(msg)
 
     elif 'stats vs' in command:
+
         command = command.split('vs')[-1]
         command = command.strip()
 
         msg = Command.get_vs_stats(
             message, command, db_UserData, db_MatchStats)
+        await message.channel.send(msg)
+
+    elif 'status' in command:
+
+        msg = Command.queue_status(message, db_UserData,
+                                   db_UserQueue, db_MatchQueue, db_MatchStats)
         await message.channel.send(msg)
 
 

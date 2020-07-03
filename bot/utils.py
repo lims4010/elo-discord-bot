@@ -54,6 +54,8 @@ def add_match_queue(message, playerA, playerB, db_UserQueue, db_MatchQueue):
     db_UserQueue.find_one_and_update({'user_id': playerB[2]},
                                      {'$set': {'matchId': matchId}})
 
+
+def change_confirm_status(message, db_UserQueue):
     user_id = str(message.author.id)
     db_UserQueue.find_one_and_update({'user_id': user_id},
                                      {'$set': {'confirmed': True}})
@@ -65,8 +67,6 @@ def is_confirmed(user_id, db_UserQueue):
     if cursor[0]['confirmed']:
         return True
     else:
-        db_UserQueue.find_one_and_update(filter,
-                                         {'$set': {'confirmed': True}})
         return False
 
 
@@ -112,7 +112,7 @@ def calculate_elo(eloA, eloB, winsA, winsB):
     sumEA = (winsA+winsB) * EA
     SA = winsA
     newEloA = eloA + kF*(SA - sumEA)
-    return newEloA
+    return round(newEloA)
 
 
 def record_match(playerA, playerB, db_UserData, db_MatchStats):
