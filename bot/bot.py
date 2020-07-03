@@ -13,7 +13,7 @@ cluster = MongoClient(mongoDBSecret)
 db_UserData = cluster["Data"]["UserData"]
 db_UserQueue = cluster["Data"]["UserQueue"]
 db_MatchQueue = cluster["Data"]["MatchQueue"]
-db_MatchStats = cluser["Data"]["MatchStats"]
+db_MatchStats = cluster["Data"]["MatchStats"]
 
 # Main Logic
 client = discord.Client()
@@ -35,6 +35,8 @@ async def on_message(message):
     # Read only from smash channel and with -- starter
     command = message.content.lower()
     if message.channel.name != 'smash':
+        print(message.author.name)
+        print(message.author.display_name)
         return
     elif command[:2] != '--':
         return
@@ -44,7 +46,6 @@ async def on_message(message):
     if 'register me' in command:
 
         isNewUser = Command.register_user(message, db_UserData, db_UserQueue)
-
         if isNewUser:
             await message.channel.send('User Created!')
         else:
@@ -53,15 +54,34 @@ async def on_message(message):
     elif 'match' in command:
 
         command = command.replace('match', '')
-
         msg = Command.queue_match(message, command, db_UserData,
                                   db_UserQueue, db_MatchQueue)
-
         await message.channel.send(msg)
 
     elif 'confirm' in command:
 
-        await message.channel.send('Got it!')
+        command = command.replace('confirm', '')
+        msg = Command.confirm_match(message, command, db_UserData,
+                                    db_UserQueue, db_MatchQueue, db_MatchStats)
+        await message.channel.send(msg)
+
+    elif 'my stats' in command:
+        command = command.replace('my stats', '')
+        msg = Command.get_mystats(message, db_UserData)
+        await message.channel.send(msg)
+
+    elif 'change name' in command:
+        msg = Command.change_name(message, db_UserData)
+        await message.channel.send(msg)
+
+    elif 'stats vs' in command:
+        command = command.split('vs')[-1]
+        command = command.strip()
+
+        msg = Command.get_vs_stats(
+            message, command, db_UserData, db_MatchStats)
+        await message.channel.send(msg)
+
 
 # Set up the base bot
 
