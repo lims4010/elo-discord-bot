@@ -1,56 +1,74 @@
 import os
 import discord
-import asyncio
 import configparser
+from pymongo import MongoClient
 from bot.commands import Command
 
+# Set Tokens/Secrets
+mongoDBSecret = os.environ["MONGODB_SECRET"]
+discordToken = os.environ["DISCORD_TOKEN"]
+
+# DB Connect
+cluster = MongoClient(mongoDBSecret)
+db_UserData = cluster["Data"]["UserData"]
+db_UserQueue = cluster["Data"]["UserQueue"]
+db_MatchQueue = cluster["Data"]["MatchQueue"]
+db_MatchStats = cluser["Data"]["MatchStats"]
+
+# Main Logic
 client = discord.Client()
 
 
 @client.event
-@asyncio.coroutine
-def on_ready():
+async def on_ready():
     print('Logged in as: {0} - {1}'.format(client.user.name, client.user.id))
     print('-'*20)
 
 
 @client.event
-@asyncio.coroutine
-def on_message(message):
-    command = message.content.lower()
+async def on_message(message):
+
+    # Do not respond to itself
     if message.author == client.user:
         return
-    elif command == '!':
-        yield from client.send_message(message.channel, '<@{0}>, No command has been passed.'.format(message.author.id))
-    elif command.startswith('!leet'):
-        response = Command.leet_speak(command.replace('!leet', ''))
-        yield from client.send_message(message.channel, '{0}'.format(response))
 
+    # Read only from smash channel and with -- starter
+    command = message.content.lower()
+    if message.channel.name != 'smash':
+        return
+    elif command[:2] != '--':
+        return
+    command = command.replace('--', '')
+
+    # Main Functions
+    if 'register me' in command:
+
+        isNewUser = Command.register_user(message, db_UserData, db_UserQueue)
+
+        if isNewUser:
+            await message.channel.send('User Created!')
+        else:
+            await message.channel.send('User already registered.')
+
+    elif 'match' in command:
+
+        command = command.replace('match', '')
+
+        msg = Command.queue_match(message, command, db_UserData,
+                                  db_UserQueue, db_MatchQueue)
+
+        await message.channel.send(msg)
+
+    elif 'confirm' in command:
+
+        await message.channel.send('Got it!')
 
 # Set up the base bot
+
+
 class DiscordBot(object):
     def __init__(self):
-        self.token = None
-        self.config = configparser.ConfigParser()
-
-    def create_config(self):
-        # Ask user for bot token
-        self.token = input('Bot Token:')
-        # Creates base config file
-        self.config.add_section('DiscordBot')
-        self.config.set('DiscordBot', 'token', self.token)
-        with open('{0}\{1}'.format(os.getcwd(), 'config.ini'), 'w') as configfile:
-            self.config.write(configfile)
-
-    def get_token(self):
-        self.config.read('{0}\{1}'.format(os.getcwd(), 'config.ini'))
-        self.token = self.config.get('DiscordBot', 'token')
-
-    def set_token(self, token):
-        self.config.read('{0}\{1}'.format(os.getcwd(), 'config.ini'))
-        self.config.set('DiscordBot', 'token', token)
-        with open('{0}\{1}'.format(os.getcwd(), 'config.ini'), 'w') as configfile:
-            self.config.write(configfile)
+        self.token = discordToken
 
     def run(self):
         client.run(self.token)

@@ -1,3 +1,7 @@
+# User Specified
+setEnvVar.py
+dbTests.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
