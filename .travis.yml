@@ -5,5 +5,18 @@ python:
 install:
   - pip install -r requirements.txt
 # command to run tests
-script:
-  - python -m wrapper.py
+# script:
+#   - python app.py
+
+# deploy:
+#   provider: elasticbeanstalk
+#   region: "us-west-1"
+#   app: "sjb"
+#   env: "Sjb-env"
+#   bucket_name: "elasticbeanstalk-us-west-1-356797372863"
+#   bucket_path: "sjb"
+#   on:
+#     branch: master
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key:
+#     secure: "$AWS_SECRET_KEY"
