@@ -34,8 +34,6 @@ async def on_message(message):
     # Read only from smash channel and with -- starter
     command = message.content.lower()
     if message.channel.name != 'smash':
-        print(message.author.name)
-        print(message.author.display_name)
         return
     elif command[:2] != '--':
         return
@@ -103,3 +101,7 @@ class DiscordBot(object):
 
     def run(self):
         client.run(self.token)
+
+    async def runTest(self):
+        client.start(self.token)
+        await client.close()

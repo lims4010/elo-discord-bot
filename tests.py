@@ -12,5 +12,5 @@ class IsBotOnline(unittest.TestCase):
 if __name__ == '__main__':
 
     bot = DiscordBot()
-    bot.run()
+    bot.runTest()
     unittest.main()
