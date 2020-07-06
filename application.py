@@ -23,14 +23,18 @@ if __name__ == "__main__":
     # removed before deploying a production app.
 
     bot = DiscordBot()
-    bot.run()
+
+    # bot.run()
 
     # loop = asyncio.get_event_loop()
     # loop.run_until_complete(bot.run())
 
-    # t = threading.Thread(target=bot.run)
-    # t.daemon = True
-    # t.start()
+    print('Start Discord bot')
+    t = threading.Thread(target=bot.run)
+    t.daemon = True
+    t.start()
+    print('Discord bot success')
 
+    print('Start Flask')
     application.debug = False
     application.run()
