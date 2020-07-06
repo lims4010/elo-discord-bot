@@ -4,8 +4,8 @@ from pymongo import MongoClient
 from bot.commands import Command
 
 # Set Tokens/Secrets
-mongoDBSecret = os.environ["MONGODB_SECRET"]
-discordToken = os.environ["DISCORD_TOKEN"]
+mongoDBSecret = os.environ['MONGODB_SECRET']
+discordToken = os.environ['DISCORD_TOKEN']
 
 # DB Connect
 cluster = MongoClient(mongoDBSecret)
@@ -99,9 +99,12 @@ class DiscordBot(object):
     def __init__(self):
         self.token = discordToken
 
+    # async def run(self):
+
+    #     try:
+    #         await client.start(self.token)
+    #     except KeyboardInterrupt:
+    #         await client.logout()
+
     def run(self):
         client.run(self.token)
-
-    async def runTest(self):
-        client.start(self.token)
-        await client.close()
