@@ -1,6 +1,9 @@
 # User Specified
 setEnvVar.py
 dbTests.py
+.git
+tests.py
+.elasticbeanstalk
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
