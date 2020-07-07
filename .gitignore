@@ -4,6 +4,7 @@ dbTests.py
 .git
 tests.py
 .elasticbeanstalk
+.pyc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
