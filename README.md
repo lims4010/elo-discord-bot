@@ -6,11 +6,18 @@ Implementation: https://en.wikipedia.org/wiki/Elo_rating_system
 
 ## Running locally
 
+Set Environment Variables:
+
+```
+$ export DISCORD_TOKEN=....
+$ export MONGODB_SECRET=...
+```
+
 To Run:
 
 ```
 $ pip install -r requirements.txt
-$ python app.py
+$ python botApp.py
 ```
 
 ## Commands
