@@ -117,9 +117,6 @@ def calculate_elo(eloA, eloB, winsA, winsB):
 
 def record_match(playerA, playerB, db_UserData, db_MatchStats):
     sortedMatch = sorted([playerA, playerB], key=lambda x: int(x[2]))
-    # sortedMatch = sorted([playerA[0], playerB[0]])
-    # playerAName = sortedMatch[0][1]
-    # playerBName = sortedMatch[1][1]
     playerAId = sortedMatch[0][2]
     playerBId = sortedMatch[1][2]
     playerAWins = int(sortedMatch[0][1])
@@ -194,3 +191,16 @@ def pull_vs_stats(playerA, playerB, db_MatchStats):
         return playerAName, playerBName, wins, True
     else:
         return None, None, None, False
+
+
+def pull_elo_data(db_UserData, nPlayers):
+    names = db_UserData.distinct('name')
+    elo = db_UserData.distinct('elo')
+
+    sortedNames = [y for _, y in sorted(zip(elo, names), reverse=True)]
+    sortedElo = sorted(elo, reverse=True)
+
+    sortedNames = sortedNames[:nPlayers]
+    sortedElo = sortedElo[:nPlayers]
+
+    return sortedNames, sortedElo

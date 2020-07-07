@@ -1,4 +1,4 @@
-from bot.utils import add_new_user, is_registered, in_queue, change_queue_status, add_match_queue, change_confirm_status, is_confirmed, get_match, process_elo, record_match, clear_queue, pull_my_stats, update_name, pull_vs_stats
+from bot.utils import add_new_user, is_registered, in_queue, change_queue_status, add_match_queue, change_confirm_status, is_confirmed, get_match, process_elo, record_match, clear_queue, pull_my_stats, update_name, pull_vs_stats, pull_elo_data
 
 
 class Command:
@@ -114,6 +114,11 @@ class Command:
         playerA, playerB, matchId = get_match(
             user_id, db_UserQueue, db_MatchQueue)
 
+        clear_queue(playerA, playerB, matchId, db_UserQueue, db_MatchQueue)
+
+        msg = '{0} {1} - {2} {3} match canceled.'.format(
+            playerA[0], playerA[1], playerB[0], playerB[1])
+
     @classmethod
     def get_mystats(cls, message, db_UserData):
 
@@ -194,5 +199,40 @@ class Command:
         else:
             msg = 'Game : {0} {1} - {2} {3}, waiting for {4} to confirm'.format(
                 playerA[0], playerA[1], playerB[0], playerB[1], name)
+
+        return msg
+
+    @classmethod
+    def get_ranking(cls, command, db_UserData):
+
+        params = command.strip().split('-')
+
+        if len(params) > 2:
+            return 'Invalid Input.'
+
+        if len(params) == 0 or len(params) == 1:
+
+            nPlayers = 8
+
+        else:
+
+            nPlayers = params[1]
+
+            if nPlayers == 'all':
+                nPlayers = None
+            elif not nPlayers.isnumeric():
+                return 'Invalid Input: - # must be numeric.'
+            else:
+                nPlayers = int(nPlayers)
+
+        names, elo = pull_elo_data(db_UserData, nPlayers)
+
+        msg = ''
+
+        for idx, val in enumerate(names):
+            temp = '{0}. Player : {1} -- ELO : {2} \n'.format(
+                idx + 1, names[idx], elo[idx])
+
+            msg = msg + temp
 
         return msg

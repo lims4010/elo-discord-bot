@@ -62,6 +62,13 @@ async def on_message(message):
                                     db_UserQueue, db_MatchQueue, db_MatchStats)
         await message.channel.send(msg)
 
+    elif 'cancel' in command:
+
+        msg = Command.cancel_match(
+            message, db_UserData, db_UserQueue, db_MatchQueue)
+
+        await message.channel.send(msg)
+
     elif 'my stats' in command:
 
         command = command.replace('my stats', '')
@@ -86,6 +93,12 @@ async def on_message(message):
 
         msg = Command.queue_status(message, db_UserData,
                                    db_UserQueue, db_MatchQueue, db_MatchStats)
+        await message.channel.send(msg)
+
+    elif 'ranking' in command:
+
+        command = command.replace('ranking', '')
+        msg = Command.get_ranking(command, db_UserData)
         await message.channel.send(msg)
 
     elif 'help' in command:
