@@ -1,5 +1,6 @@
 import os
 import discord
+import asyncio
 from pymongo import MongoClient
 from bot.commands import Command
 
