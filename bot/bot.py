@@ -102,6 +102,6 @@ class DiscordBot(object):
     def run(self):
         client.run(self.token)
 
-    async def runTest(self):
-        client.start(self.token)
-        await client.close()
+    # async def runTest(self):
+    #     client.start(self.token)
+    #     await client.close()
