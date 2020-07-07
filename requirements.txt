@@ -1,4 +1,3 @@
-discord.py
+discord
 pymongo
 dnspython
-flask

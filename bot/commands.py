@@ -100,6 +100,21 @@ class Command:
         return msg
 
     @classmethod
+    def cancel_match(cls, message, db_UserData, db_UserQueue, db_MatchQueue):
+
+        name = message.author.display_name.lower()
+        flag, user_id = is_registered(name, db_UserData)
+
+        if not(flag):
+            return 'Player ' + name + ' not registered.'
+
+        if not (in_queue(user_id, db_UserQueue)):
+            return 'Player ' + name + ' not in queue.'
+
+        playerA, playerB, matchId = get_match(
+            user_id, db_UserQueue, db_MatchQueue)
+
+    @classmethod
     def get_mystats(cls, message, db_UserData):
 
         name = message.author.display_name.lower()
