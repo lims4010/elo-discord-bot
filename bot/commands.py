@@ -16,6 +16,7 @@ class Command:
 
     @classmethod
     def queue_match(cls, message, command, db_UserData, db_UserQueue, db_MatchQueue):
+        name = message.author.display_name.lower()
         if command.count('-') != 1:
             return 'Invalid Input: Too many/little dashes.'
 
@@ -33,6 +34,9 @@ class Command:
             return 'Invalid Input: Must be --> PlayerA # - PlayerB #'
         if not((playerA[1]+playerB[1]).isnumeric()):
             return 'Invalid Input: #s must be numeric.'
+
+        if not name in [playerA[0], playerB[0]]:
+            return 'Invalid. User not in the match.'
 
         flagA, userA_id = is_registered(playerA[0], db_UserData)
         flagB, userB_id = is_registered(playerB[0], db_UserData)
