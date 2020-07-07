@@ -103,7 +103,7 @@ async def on_message(message):
 
     elif 'help' in command:
 
-        msg = "Commands must start with -- and be in the #melee channel to be recognized. Usable commands: register me, match %NAME # - %NAME #, confirm, cancel, my stats, change name, stats vs %NAME, status, ranking (optional -all, -#)."
+        msg = "Commands must start with -- and be in the #smash channel to be recognized. Usable commands: register me, match %NAME # - %NAME #, confirm, cancel, my stats, change name, stats vs %NAME, status, ranking (optional -all, -#)."
         await message.channel.send(msg)
 
 # Set up the base bot

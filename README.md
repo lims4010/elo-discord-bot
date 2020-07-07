@@ -15,7 +15,7 @@ $ python app.py
 
 ## Commands
 
-Must be sent through channel labeled #melee and start with '--' indentifier.
+Must be sent through channel labeled #smash and start with '--' indentifier.
 
 ```
 -- register me
@@ -33,7 +33,7 @@ Cancels queued match and removes match from queue.
 -- my stats
 Show players DB name, ELO, total games played, # wins, and # losses.
 
--- change anme
+-- change name
 Changes user name in DB if switched in discord.
 
 -- stats vs PlayerB
