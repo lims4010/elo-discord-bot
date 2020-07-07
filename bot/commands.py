@@ -123,6 +123,8 @@ class Command:
         msg = '{0} {1} - {2} {3} match canceled.'.format(
             playerA[0], playerA[1], playerB[0], playerB[1])
 
+        return msg
+
     @classmethod
     def get_mystats(cls, message, db_UserData):
 
