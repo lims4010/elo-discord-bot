@@ -29,11 +29,11 @@ if __name__ == "__main__":
     # loop = asyncio.get_event_loop()
     # loop.run_until_complete(bot.run())
 
-    print('Start Discord bot')
-    t = threading.Thread(target=bot.run)
-    t.daemon = True
-    t.start()
-    print('Discord bot success')
+    # print('Start Discord bot')
+    # t = threading.Thread(target=bot.run)
+    # t.daemon = True
+    # t.start()
+    # print('Discord bot success')
 
     print('Start Flask')
     application.debug = False
