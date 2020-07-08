@@ -1,6 +1,6 @@
 import os
 import unittest
-import setEnvVar
+# import setEnvVar
 from bot.bot import DiscordBot
 
 if __name__ == '__main__':
