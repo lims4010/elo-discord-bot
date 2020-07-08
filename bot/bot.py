@@ -36,7 +36,7 @@ async def on_message(message):
     command = message.content.lower()
     if message.channel.name != 'smash':
         return
-    elif command[:2] != '--' and command[:2] != '—':
+    elif command[:2] != '--' and command[:1] != '—':
         return
     command = command.replace('--', '')
     command = command.replace('—', '')
