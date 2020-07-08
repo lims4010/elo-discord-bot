@@ -194,8 +194,9 @@ def pull_vs_stats(playerA, playerB, db_MatchStats):
 
 
 def pull_elo_data(db_UserData, nPlayers):
-    names = db_UserData.distinct('name')
-    elo = db_UserData.distinct('elo')
+    users = list(db_UserData.find({}))
+    names = [user['name'] for user in users]
+    elo = [user['elo'] for user in users]
 
     sortedNames = [y for _, y in sorted(zip(elo, names), reverse=True)]
     sortedElo = sorted(elo, reverse=True)
