@@ -96,10 +96,10 @@ def process_elo(playerA, playerB, db_UserData):
     ngamesA = cursorA[0]['ngames']
     ngamesB = cursorB[0]['ngames']
 
-    if ngamesA > 10:
+    if ngamesA >= 10:
         db_UserData.find_one_and_update({'user_id': playerB[2]},
                                         {'$set': {'elo': newEloB}})
-    if ngamesB > 10:
+    if ngamesB >= 10:
         db_UserData.find_one_and_update({'user_id': playerA[2]},
                                         {'$set': {'elo': newEloA}})
 
