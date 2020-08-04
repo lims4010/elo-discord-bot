@@ -42,7 +42,6 @@ def change_queue_status(user_id, db_UserQueue):
 
 
 def add_match_queue(message, playerA, playerB, db_UserQueue, db_MatchQueue):
-    # match = sorted([playerA, playerB])
     match = [playerA, playerB]
     db_MatchQueue.insert_one({'match': match})
     cursor = db_MatchQueue.find({'match': match})
