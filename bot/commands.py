@@ -1,4 +1,5 @@
-from bot.utils import add_new_user, is_registered, in_queue, change_queue_status, add_match_queue, change_confirm_status, is_confirmed, get_match, process_elo, record_match, clear_queue, pull_my_stats, update_name, pull_vs_stats, pull_elo_data
+from bot.utils import parse_queue_input, add_new_user, is_registered, in_queue, change_queue_status, add_match_queue, change_confirm_status, is_confirmed, get_match, process_elo, record_match, clear_queue, pull_my_stats, update_name, pull_vs_stats, pull_elo_data
+from bot.models import PlayerData
 
 
 class Command:
@@ -22,41 +23,53 @@ class Command:
 
         players = command.split('-')
         if len(players) != 2:
-            return 'Invalid Input: # of players.'
+            return 'Invalid Input: Must be two players.'
 
         players = [x.strip().lower() for x in players]
 
-        # Match Data: Player[0] -> Discord Display Name, [1] -> # Wins
-        playerA = players[0].split(' ')
-        playerB = players[1].split(' ')
+        playerA = parse_queue_input(players[0])
+        playerB = parse_queue_input(players[1])
 
-        if len(playerA) + len(playerB) != 4:
+        if playerA == None or playerB == None:
             return 'Invalid Input: Must be --> PlayerA # - PlayerB #'
-        if not((playerA[1]+playerB[1]).isnumeric()):
+
+        if not (playerA.nwins.isnumeric()) or not (playerB.nwins.isnumeric()):
             return 'Invalid Input: #s must be numeric.'
 
-        if not name in [playerA[0], playerB[0]]:
+        if not name in [playerA.name, playerB.name]:
             return 'Invalid. User not in the match.'
 
-        flagA, userA_id = is_registered(playerA[0], db_UserData)
-        flagB, userB_id = is_registered(playerB[0], db_UserData)
+        # Match Data: Player[0] -> Discord Display Name, [1] -> # Wins
+        # playerA = players[0].split(' ')
+        # playerB = players[1].split(' ')
 
-        if not(flagA) and not(flagB):
-            return 'Players {0} and {1} are not registered.'.format(playerA[0], playerB[0])
-        elif not(flagA):
-            return 'Player {0} not registered.'.format(playerA[0])
-        elif not(flagB):
-            return 'Player {0} not registered.'.format(playerB[0])
+        # if len(playerA) + len(playerB) != 4:
+        #     return 'Invalid Input: Must be --> PlayerA # - PlayerB #'
+        # if not((playerA[1]+playerB[1]).isnumeric()):
+        #     return 'Invalid Input: #s must be numeric.'
+
+        # if not name in [playerA[0], playerB[0]]:
+        #     return 'Invalid. User not in the match.'
+
+        userA_id = is_registered(playerA.name, db_UserData)
+        userB_id = is_registered(playerB.name, db_UserData)
+
+        if (userA_id == None) and (userB_id == None):
+            return 'Players {0} and {1} are not registered.'.format(playerA.name, playerB.name)
+        elif (userA_id == None):
+            return 'Player {0} not registered.'.format(playerA.name)
+        elif (userB_id == None):
+            return 'Player {0} not registered.'.format(playerB.name)
 
         flagA = in_queue(userA_id, db_UserQueue)
         flagB = in_queue(userB_id, db_UserQueue)
 
         if flagA and flagB:
-            return 'Players {0} and {1} are in queue.'.format(playerA[0], playerB[0])
+            return 'Players {0} and {1} are in queue.'.format(playerA.name, playerB.name)
         elif flagA:
-            return 'Player {0} already in queue.'.format(playerA[0])
+            return 'Player {0} already in queue.'.format(playerA.name)
         elif flagB:
-            return 'Player {0} already in queue.'.format(playerB[0])
+            return 'Player {0} already in queue.'.format(playerB.name)
 
         change_queue_status(userA_id, db_UserQueue)
         change_queue_status(userB_id, db_UserQueue)
@@ -65,8 +78,11 @@ class Command:
 
         # Player[2] -> unique discord user_id
 
-        playerA.append(userA_id)
-        playerB.append(userB_id)
+        # playerA.append(userA_id)
+        # playerB.append(userB_id)
+
+        playerA.setUserId(userA_id)
+        playerB.setUserId(userB_id)
 
         # Add match to queue
         add_match_queue(message, playerA, playerB, db_UserQueue, db_MatchQueue)
@@ -78,9 +94,9 @@ class Command:
                       db_UserQueue, db_MatchQueue, db_MatchStats):
 
         name = message.author.display_name.lower()
-        flag, user_id = is_registered(name, db_UserData)
+        user_id = is_registered(name, db_UserData)
 
-        if not(flag):
+        if (user_id == None):
             return 'Player ' + name + ' not registered.'
 
         if not (in_queue(user_id, db_UserQueue)):
@@ -99,7 +115,7 @@ class Command:
         clear_queue(playerA, playerB, matchId, db_UserQueue, db_MatchQueue)
 
         msg = '{0} {1} - {2} {3} match recorded!'.format(
-            playerA[0], playerA[1], playerB[0], playerB[1])
+            playerA.name, playerA.nwins, playerB.name, playerB.nwins)
 
         return msg
 
@@ -107,9 +123,9 @@ class Command:
     def cancel_match(cls, message, db_UserData, db_UserQueue, db_MatchQueue):
 
         name = message.author.display_name.lower()
-        flag, user_id = is_registered(name, db_UserData)
+        user_id = is_registered(name, db_UserData)
 
-        if not(flag):
+        if (user_id == None):
             return 'Player ' + name + ' not registered.'
 
         if not (in_queue(user_id, db_UserQueue)):
@@ -121,7 +137,7 @@ class Command:
         clear_queue(playerA, playerB, matchId, db_UserQueue, db_MatchQueue)
 
         msg = '{0} {1} - {2} {3} match canceled.'.format(
-            playerA[0], playerA[1], playerB[0], playerB[1])
+            playerA.name, playerA.nwins, playerB.name, playerB.nwins)
 
         return msg
 
@@ -129,9 +145,9 @@ class Command:
     def get_mystats(cls, message, db_UserData):
 
         name = message.author.display_name.lower()
-        flag, user_id = is_registered(name, db_UserData)
+        user_id = is_registered(name, db_UserData)
 
-        if not(flag):
+        if (user_id == None):
             return 'Player ' + name + ' not registered.'
 
         elo, ngames, nwins, nloss = pull_my_stats(
@@ -156,18 +172,27 @@ class Command:
     def get_vs_stats(cls, message, command, db_UserData, db_MatchStats):
 
         name = message.author.display_name.lower()
-        flagA, userA_id = is_registered(name, db_UserData)
-        flagB, userB_id = is_registered(command, db_UserData)
+        userA_id = is_registered(name, db_UserData)
+        userB_id = is_registered(command, db_UserData)
 
-        if not(flagA) and not(flagB):
+        if (userA_id == None) and (userB_id == None):
             return 'Players {0} and {1} are not registered.'.format(name, command)
-        elif not(flagA):
+        elif (userA_id == None):
             return 'Player {0} not registered.'.format(name)
-        elif not (flagB):
+        elif (userB_id == None):
             return 'Player {0} not registered.'.format(command)
 
+        playerA = PlayerData()
+        playerB = PlayerData()
+
+        playerA.setName(name)
+        playerA.setUserId(userA_id)
+
+        playerB.setName(command)
+        playerB.setUserId(userB_id)
+
         userA_name, userB_name, wins, flag = pull_vs_stats(
-            [name, userA_id], [command, userB_id], db_MatchStats)
+            playerA, playerB, db_MatchStats)
 
         if not flag:
             return 'Matches never played together.'
@@ -181,9 +206,9 @@ class Command:
                      db_UserQueue, db_MatchQueue, db_MatchStats):
 
         name = message.author.display_name.lower()
-        flag, user_id = is_registered(name, db_UserData)
+        user_id = is_registered(name, db_UserData)
 
-        if not(flag):
+        if (user_id == None):
             return 'Player ' + name + ' not registered.'
 
         if not (in_queue(user_id, db_UserQueue)):
@@ -192,19 +217,19 @@ class Command:
         playerA, playerB, matchId = get_match(
             user_id, db_UserQueue, db_MatchQueue)
 
-        if user_id in playerA:
-            otherPlayer = playerB[0]
+        if user_id == playerA.user_id:
+            otherPlayer = playerB.name
         else:
-            otherPlayer = playerA[0]
+            otherPlayer = playerA.name
 
         flag = is_confirmed(user_id, db_UserQueue)
 
         if flag:
             msg = 'Game : {0} {1} - {2} {3}, waiting for {4} to confirm'.format(
-                playerA[0], playerA[1], playerB[0], playerB[1], otherPlayer)
+                playerA.name, playerA.nwins, playerB.name, playerB.nwins, otherPlayer)
         else:
             msg = 'Game : {0} {1} - {2} {3}, waiting for {4} to confirm'.format(
-                playerA[0], playerA[1], playerB[0], playerB[1], name)
+                playerA.name, playerA.nwins, playerB.name, playerB.nwins, name)
 
         return msg
 
