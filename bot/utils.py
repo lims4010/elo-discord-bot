@@ -1,4 +1,5 @@
 from bot.models import PlayerData
+from bot import config
 
 
 def add_new_user(start_elo, user_id, name, db_UserData, db_UserQueue):
@@ -7,7 +8,7 @@ def add_new_user(start_elo, user_id, name, db_UserData, db_UserQueue):
     else:
         post = {'user_id': user_id,
                 'name': name,
-                'elo': start_elo,
+                'elo': config.start_elo,
                 'ngames': 0,
                 'nwins': 0,
                 'nloss': 0}
@@ -28,6 +29,13 @@ def is_registered(player, db_UserData):
         return user_id
     else:
         return None
+
+
+def is_authorized(user_id, db_UserData):
+    if config.auth_id == user_id:
+        return True
+    else:
+        return False
 
 
 def in_queue(user_id, db_UserQueue):
@@ -85,7 +93,7 @@ def get_match(user_id, db_UserQueue, db_MatchQueue):
     return playerA, playerB, matchId
 
 
-def process_elo(playerA, playerB, db_UserData):
+def process_elo(playerA, playerB, db_UserData, db_Settings):
     winsA = playerA.nwins
     winsB = playerB.nwins
 
@@ -101,10 +109,12 @@ def process_elo(playerA, playerB, db_UserData):
     ngamesA = cursorA[0]['ngames']
     ngamesB = cursorB[0]['ngames']
 
-    if ngamesA >= 10:
+    doPlacements = db_Settings.find({'feature': 'placements'})[0]['value']
+
+    if ngamesA >= 10 or not doPlacements:
         db_UserData.find_one_and_update({'user_id': playerB.user_id},
                                         {'$set': {'elo': newEloB}})
-    if ngamesB >= 10:
+    if ngamesB >= 10 or not doPlacements:
         db_UserData.find_one_and_update({'user_id': playerA.user_id},
                                         {'$set': {'elo': newEloA}})
 
@@ -232,3 +242,22 @@ def convert_to_class(obj):
     player.setUserId(obj['user_id'])
 
     return player
+
+
+def delete_data(user_id, db_MatchStats, db_UserQueue, db_UserData):
+    db_MatchStats.delete_many({'pair': {'$regex': user_id}})
+    db_UserQueue.delete_one({'user_id': user_id})
+    db_UserData.delete_one({'user_id': user_id})
+
+
+def toggle_settings(db_Settings, feature):
+    cursor = db_Settings.find({'feature': feature})
+    flag = cursor[0]['value']
+    if flag:
+        db_Settings.find_one_and_update({'feature': feature},
+                                        {'$set': {'value': False}})
+        return False
+    else:
+        db_Settings.find_one_and_update({'feature': feature},
+                                        {'$set': {'value': True}})
+        return True

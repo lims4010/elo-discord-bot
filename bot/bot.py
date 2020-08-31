@@ -14,6 +14,7 @@ db_UserData = cluster["Data"]["UserData"]
 db_UserQueue = cluster["Data"]["UserQueue"]
 db_MatchQueue = cluster["Data"]["MatchQueue"]
 db_MatchStats = cluster["Data"]["MatchStats"]
+db_Settings = cluster["Data"]["Settings"]
 
 # Main Logic
 client = discord.Client()
@@ -60,7 +61,7 @@ async def on_message(message):
     elif 'confirm' in command:
 
         msg = Command.confirm_match(message, db_UserData,
-                                    db_UserQueue, db_MatchQueue, db_MatchStats)
+                                    db_UserQueue, db_MatchQueue, db_MatchStats, db_Settings)
         await message.channel.send(msg)
 
     elif 'cancel' in command:
@@ -72,7 +73,6 @@ async def on_message(message):
 
     elif 'my stats' in command:
 
-        command = command.replace('my stats', '')
         msg = Command.get_mystats(message, db_UserData)
         await message.channel.send(msg)
 
@@ -102,9 +102,24 @@ async def on_message(message):
         msg = Command.get_ranking(command, db_UserData)
         await message.channel.send(msg)
 
-    elif 'help' in command:
+    elif 'delete' in command:
 
-        msg = "Commands must start with -- and be in the #smash channel to be recognized. Usable commands: register me, match %NAME # - %NAME #, confirm, cancel, my stats, change name, stats vs %NAME, status, ranking (optional -all, -#)."
+        command = command.replace('delete', '')
+        command = command.strip()
+        msg = Command.delete_player(message, command, db_UserData,
+                                    db_UserQueue, db_MatchQueue, db_MatchStats)
+        await message.channel.send(msg)
+
+    elif 'toggle placements' in command:
+
+        msg = Command.toggle_placements(message, db_UserData, db_Settings)
+        await message.channel.send(msg)
+
+    elif 'help' in command:
+        msg = ""
+        msg += "Commands must start with -- and be in the #smash channel to be recognized. \n"
+        msg += "Usable commands: register me, match PlayerA # - PlayerB #, confirm, cancel, my stats, change name, stats vs Player, status, ranking (optional -all, -#). \n"
+        msg += "Admin commands: delete Player, toggle placements. \n"
         await message.channel.send(msg)
 
 # Set up the base bot

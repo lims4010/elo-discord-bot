@@ -1,4 +1,5 @@
 # User Specified
+.vscode/
 setEnvVar.py
 dbTests.py
 .git

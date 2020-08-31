@@ -25,6 +25,8 @@ $ python botApp.py
 Must be sent through channel labeled #smash and start with '--' indentifier.
 
 ```
+PLAYER COMMANDS:
+
 -- register me
 Adds user to the DB with unique discord ID, start ELO of 1500, and 10 games of placement matches.
 
@@ -54,4 +56,13 @@ Show ELO rankings for default top 8 players, all, or specified.
 
 -- help
 List commands.
+
+ADMIN COMMANDS:
+
+-- delete Player
+Deletes player data from all database collections.
+
+-- toggle placements
+Turns ON/OFF placement matches.
+
 ```
