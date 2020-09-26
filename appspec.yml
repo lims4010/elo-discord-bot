@@ -1,0 +1,13 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/app/
+hooks:
+  # AfterInstall:
+  #   - location: scripts/install_dependencies.sh
+  #     timeout: 100
+
+  # ApplicationStart:
+  #   - location: scripts/start_script.sh
+  #     timeout: 3600
