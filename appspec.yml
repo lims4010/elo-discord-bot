@@ -8,6 +8,6 @@ hooks:
   #   - location: scripts/install_dependencies.sh
   #     timeout: 100
 
-  # ApplicationStart:
-  #   - location: scripts/start_script.sh
-  #     timeout: 3600
+  ApplicationStart:
+    - location: scripts/start_script.sh
+      timeout: 3600
