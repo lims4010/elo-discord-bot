@@ -14,4 +14,4 @@ export DISCORD_TOKEN=$(echo "$DISCORD_TOKEN"|tr -d '"')
 
 MONGODB_SECRET=$MONGODB_SECRET \
 DISCORD_TOKEN=$DISCORD_TOKEN \
-pm2 start botApp.py --interpreter=python3 > log.txt
+pm2 start botApp.py --interpreter=python3 -l /var/app/log.txt
